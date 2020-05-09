@@ -1,7 +1,8 @@
 
 import './App.css';
 import Boxs from "./Boxs"
-
+import Addrecipt from "./Addrecipt"
+import CloseIcon from '@material-ui/icons/Close';
 import React, { useState, useEffect } from "react"
 import AppBar from '@material-ui/core/AppBar';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -14,34 +15,38 @@ import RestaurantIcon from '@material-ui/icons/Restaurant';
 import InputBase from '@material-ui/core/InputBase';
 import SearchIcon from '@material-ui/icons/Search';
 function App() {
+  const [flag, setflag] = useState(0);
+  const [hidden,sethidden]=useState(0);
   const [Date_json, setDate_json] = useState({ categories: [] });
   const [count, setcount] = useState(0);
-  const [search,setsearch]=useState("");
-  const [searchdate,setsearchdate]=useState([])
-  const handlesearch=(Search)=>{let i=0;
-    let flag=0;
+  const [search, setsearch] = useState("");
+  const [searchdate, setsearchdate] = useState({ categories: [] })
+  const handlesearch = (Search) => {
+    let i = 0;
+
     console.log(Search);
-    
-   for( i=0;i<Date_json.categories.length;i++){
-     
-    if(Search==Date_json.categories[i].strCategory){
-      
-      setsearchdate([ ...setsearchdate,Date_json.categories[i]]);
-      
-      flag=1;
+
+    for (i = 0; i < Date_json.categories.length; i++) {
+
+      if (Date_json.categories[i].strCategory == Search) {
+        setflag(1);
+        setsearchdate({ categories: [Date_json.categories[i]] });
+        return
+      }
     }
-  }
-  
-  if(flag==0)
-  {alert("没有此菜单");
-    setcount(1);}
-  else{
-    setDate_json({categories:searchdate});
+
+    if (flag == 0) {
+      alert("没有此菜单");
+    }
+
+  };
+
+  const addrecipt=()=>{
+    sethidden(1);
     
   }
-  }
-  
- /**  */
+
+  /**  */
   useEffect(() => {
     wait();
   }, [count]
@@ -82,6 +87,7 @@ function App() {
     },
   }));
   const classes = useStyles();
+  if(hidden==0){
   return (
     <>
       <div className="App">
@@ -98,17 +104,17 @@ function App() {
               className={classes.input}
               placeholder="Search recpit food"
               inputProps={{ 'aria-label': 'search recpit food' }}
-              onChange={(e)=>{setsearch(e.target.value)}}
+              onChange={(e) => { setsearch(e.target.value) }}
             />
             <IconButton type="submit" className={classes.iconButton} aria-label="search">
-              <SearchIcon color='action' onClick={()=>handlesearch(search)} />
+              <SearchIcon color='inherit' onClick={() => handlesearch(search)} />
             </IconButton>
 
-            <Button color="inherit">addrecpit</Button>
+            <Button color="inherit" onClick={addrecipt}>addrecpit</Button>
           </Toolbar>
         </AppBar>
         <header className="App-header">
-          {Date_json.categories.length > 0 ? <Boxs json={Date_json}></Boxs> : <div>loading</div>}
+          {Date_json.categories.length > 0 && flag == 0 ? <Boxs json={Date_json}></Boxs> : <> <CloseIcon onClick={() => setflag(0)}> close </CloseIcon> <Boxs json={searchdate}></Boxs></>}
         </header>
       </div>
     </>
@@ -117,5 +123,8 @@ function App() {
 
   );
 }
-
+else{
+  return(<Addrecipt Data={Date_json} setDate_json={setDate_json} sethidden={sethidden} ></Addrecipt>);
+}
+}
 export default App;
